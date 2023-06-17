@@ -1,0 +1,79 @@
+Configure the # 3 vms and make them on bridge mode or as per requirement
+	   IPs of all the vms should be on the same network and add them in /etc/hosts of every machine and ping them 
+>>>>>>>>>>>>>>>>>>>> 
+          Point to be noted .... firewall should off on all the machines and selinux should be disabled from vi /etc/selinux/config 
+____________________________
+	
+    Download the files in Downloads folder all tar files of Ambari , hdp3.1 hdp-utils
+_______________________________________________________________________________________
+
+	copy these tar file in /var/www/html/
+
+		by making three separate folders or directories namely ambari ,hdp ,hdp-utils   untar all files in their respective folders
+
+	#yum install createrepo -y
+
+		command just before the final folder of each ambari , hdp , hdp-utils folder 
+	
+	then copy all files {ambari.repo  &  hdp.repo}from cd /var/www/html to cd /etc/yum.repos.d
+		
+	in cd /etc/yum.repos.d >edit ambari.repo and add path 
+
+		>>>>>>>>>>>>  # cat /etc/yum.repos.d/ambari.repo 
+				#VERSION_NUMBER=2.7.3.0-139
+					[ambari-2.7.3.0]
+					#json.url = http://public-repo-1.hortonworks.com/HDP/hdp_urlinfo.json
+					name=ambari Version - ambari-2.7.3.0
+					baseurl=http://pearl-node1/ambari/ambari/centos7/2.7.3.0-139
+					gpgcheck=0
+					#gpgkey=http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.7.3.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+					enabled=1
+					priority=1
+	   	>>>>>>>>>>  # cat /etc/yum.repos.d/hdp.repo
+				#VERSION_NUMBER=3.1.0.0-78
+				[HDP-3.1.0.0]
+				name=HDP Version - HDP-3.1.0.0
+				baseurl=http://pearl-node1/hdp/HDP/centos7/3.1.0.0-78
+				gpgcheck=0
+				#gpgkey=http://public-repo-1.hortonworks.com/HDP/centos7/3.x/updates/3.1.0.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+				enabled=1
+				priority=1
+
+			
+				[HDP-UTILS-1.1.0.22]
+				name=HDP-UTILS Version - HDP-UTILS-1.1.0.22
+				baseurl=http://pearl-node1/hdp-utils/HDP-UTILS/centos7/1.1.0.22
+				gpgcheck=0
+				#gpgkey=http://public-repo-1.hortonworks.com/HDP/centos7/3.x/updates/3.1.0.0/RPM-GPG-KEY/RPM-GPG-KEY-Jenkins
+				enabled=1
+				priority=1
+Now type command and run 
+       #yum repolist
+		check for the changing numbers in right corner of every .repo file status should be non-zero Integer
+		yum install ambari-server.x86_64 -y
+		yum install ambari-agent.x86_64 -y   (*****Do this also in every node )
+		ambari-server start
+		ambari-agent start    (****Do this also in every node )
+		
+   # cat /etc/ambari-agent/conf/ambari-agent.ini
+   # vim /etc/ambari-agent/conf/ambari-agent.ini    **** Check for hostname ....hostname = pearl-node1
+ 
+    Add Chinese code from >>> https://www.cnblogs.com/nshuai/p/13404273.html    @line number #39892
+       in this 
+				 # cd /usr/lib/ambari-server/web/javascripts/
+				 # ls 
+				 # vi app.js
+   # ambari-server stop
+   # ambari-server reset
+   # ambari-server start
+ 
+On browser of pearl-node search for >>>    pearl-node1:8080  >>>> username: admin  >>>> password : admin
+	Now download mysql and follow below commands :>>>>>>>>
+
+   # cd /root/Downloads/
+   # ls
+   # rpm -ivh mysql-connector-j-8.0.31-1.el7.noarch.rpm
+   # cd /usr/share/java
+   # ls
+   # pwd       >>> /usr/share/java/mysql-connector-j.jar
+   # ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-j.jar
